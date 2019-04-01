@@ -14,6 +14,7 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.e("3", "Called");
-        return inflater.inflate(R.layout.fragment_search,null);
+        View v = inflater.inflate(R.layout.fragment_search,null);
+        return v;
     }
 }

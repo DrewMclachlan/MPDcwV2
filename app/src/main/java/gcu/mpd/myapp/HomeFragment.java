@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
     private ListView listApps;
@@ -66,7 +67,7 @@ public class HomeFragment extends Fragment {
 
             //  populateMap(xmlParse.getEarthquakeList());
 
-            // addToDb(xmlParse.getEarthquakeList());
+            addToDb(xmlParse.getEarthquakeList());
 
             ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
                     thiscontext, R.layout.list_item, xmlParse.getEarthquakeList());
@@ -76,21 +77,21 @@ public class HomeFragment extends Fragment {
         }
 
 
-        // private void addToDb(ArrayList<earthquake> e){
-        //   DatabaseHelper dbh = new DatabaseHelper(getApplicationContext());
-        //   dbh.getWritableDatabase();
-        //   dbh.drop();
-        //  for(earthquake o : e){
-        //     String title = o.getTitle();
-        //     String description = o.getDescription();
-        //     String link = o.getLink();
-        //    String  pubDate = o.getPubDate();
-        //    String  category = o.getCategory();
-        //    Double  gLat = Double.valueOf(o.getgLat());
-        //   Double  gLong = Double.valueOf(o.getgLong());
-        //   dbh.insert(title, description, link, pubDate, category, gLat, gLong);
-        // }
-        // }
+         private void addToDb(ArrayList<earthquake> e){
+           DatabaseHelper dbh = new DatabaseHelper(thiscontext);
+           dbh.getWritableDatabase();
+           dbh.drop();
+          for(earthquake o : e){
+             String title = o.getTitle();
+             String description = o.getDescription();
+             String link = o.getLink();
+            String  pubDate = o.getPubDate();
+            String  category = o.getCategory();
+            Double  gLat = Double.valueOf(o.getgLat());
+           Double  gLong = Double.valueOf(o.getgLong());
+          dbh.insert(title, description, link, pubDate, category, gLat, gLong);
+         }
+         }
 
 
 
@@ -135,7 +136,6 @@ public class HomeFragment extends Fragment {
             } catch (SecurityException e) {
                 Log.e(TAG, "Dxml: Security Exception" + e.getMessage());
             }
-
             return null;
 
         }

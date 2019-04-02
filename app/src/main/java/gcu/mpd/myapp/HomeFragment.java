@@ -24,11 +24,14 @@ import java.util.ArrayList;
 public class HomeFragment extends Fragment {
     private ListView listApps;
     Context thiscontext;
+    ArrayList<earthquake> eal;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         thiscontext = context;
+        DatabaseHelper dbh = new DatabaseHelper(context);
+        eal = dbh.returnall();
     }
 
 
@@ -37,136 +40,21 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.e("1", "Called");
         thiscontext = container.getContext();
-        DownloadData downloadData = new DownloadData();
-        downloadData.execute("http://quakes.bgs.ac.uk/feeds/MhSeismology.xml");
            View view = inflater.inflate(R.layout.fragment_home,null);
         listApps = (ListView) view.findViewById(R.id.xmlistview);
+        ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
+                thiscontext, R.layout.list_item, eal);
+        listApps.setAdapter(arrayAdapter);
 
-           return view;
+
+
+        return view;
     }
 
     @Nullable
     @Override
     public Context getContext() {
         return super.getContext();
-    }
-
-    private class DownloadData extends AsyncTask<String, Void, String> {
-        private static final String TAG = "DownloadData";
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            // Log.d(TAG, "ONP" + s);
-            //this is called after do in background is completed
-            XMLParse xmlParse = new XMLParse();
-            xmlParse.parse(s);
-            ArrayList<earthquake> eal;
-            eal = xmlParse.getEarthquakeList();
-            for(earthquake e : eal)
-            {
-                //Set Title
-                String S[] = e.getDescription().split(";", 3);
-                String Title[] = S[1].split(":", 2);
-                e.setTitle(Title[1].trim());
-
-               // Log.e("Title", Title[1].trim());
-
-                //Set Mag
-                String S2[] = e.getDescription().split(";");
-                String D[] = S2[4].split(":", 2);
-                e.setMag(D[1]);
-
-               // Log.e("Mag", D[1]);
-
-                //Set Depth
-                String temp2[] = e.getDescription().split(";");
-                String D2[] = temp2[3].split(" ");
-                e.setDepth(D2[2]);
-               // Log.e("Depth", D2[2]);
-
-
-            }
-
-            //Create new thread for both these operations so they dont block the main thread.
-
-            //  populateMap(xmlParse.getEarthquakeList());
-
-            addToDb(xmlParse.getEarthquakeList());
-
-            ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
-                    thiscontext, R.layout.list_item, eal);
-            listApps.setAdapter(arrayAdapter);
-
-           //  s = the xml after the do in background methoded has downloaded
-        }
-
-
-         private void addToDb(ArrayList<earthquake> e){
-           DatabaseHelper dbh = new DatabaseHelper(thiscontext);
-           dbh.getWritableDatabase();
-           dbh.drop();
-          for(earthquake o : e){
-             String title = o.getTitle();
-             String description = o.getDescription();
-             String link = o.getLink();
-            String  pubDate = o.getPubDate();
-            String  category = o.getCategory();
-            Double  gLat = Double.valueOf(o.getgLat());
-           Double  gLong = Double.valueOf(o.getgLong());
-           String  mag = o.getMag();
-           String depth = o.getDepth();
-          dbh.insert(title, description, link, pubDate, category, gLat, gLong, mag, depth);
-         }
-         }
-
-
-
-
-        @Override
-        protected String doInBackground(String... strings) {
-            // Log.d(TAG, "DIB: starts with " + strings[0]);
-            String rssFeed = downloadXML(strings[0]);
-            if (rssFeed == null) {
-                Log.e(TAG, "DIB: Error downloading");
-            }
-            return rssFeed;
-        }
-
-        private String downloadXML(String urlPath) {
-            StringBuilder xmlResults = new StringBuilder();
-
-            try {
-                URL url = new URL(urlPath);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                int response = connection.getResponseCode();
-                Log.d(TAG, "Dxml: the response code was " + response);
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                int charsRead;
-                char[] inputBuffer = new char[500];
-                while (true) {
-                    charsRead = reader.read(inputBuffer);
-                    if (charsRead < 0) {
-                        break;
-                    }
-                    if (charsRead > 0) {
-                        xmlResults.append(String.copyValueOf(inputBuffer, 0, charsRead));
-                    }
-                }
-                reader.close();
-                return xmlResults.toString();
-            } catch (MalformedURLException e) {
-                Log.e(TAG, "Dxml: Invlaid URl" + e.getMessage());
-            } catch (IOException e) {
-                Log.e(TAG, "Dxml: IOe reading data" + e.getMessage());
-            } catch (SecurityException e) {
-                Log.e(TAG, "Dxml: Security Exception" + e.getMessage());
-            }
-            return null;
-
-        }
-
     }
 
 

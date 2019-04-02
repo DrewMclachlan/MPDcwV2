@@ -9,6 +9,10 @@ public class earthquake {
     private String gLat;
     private String gLong;
 
+    private String mag;
+    private String depth;
+    private String atr;
+
     public earthquake()
     {
         title = "";
@@ -18,6 +22,8 @@ public class earthquake {
         category = "";
         gLat = "";
         gLong = "";
+        mag = "";
+        depth = "";
 
     }
     public earthquake(String atitle, String adescription, String alink, String apubDate,
@@ -30,6 +36,30 @@ public class earthquake {
         category = acategory;
         gLat = agLat;
         gLong = agLong;
+    }
+
+    public String getAtr() {
+        return atr;
+    }
+
+    public void setAtr(String atr) {
+        this.atr = atr;
+    }
+
+    public String getMag() {
+        return mag;
+    }
+
+    public void setMag(String mag) {
+        this.mag = mag;
+    }
+
+    public String getDepth() {
+        return depth;
+    }
+
+    public void setDepth(String depth) {
+        this.depth = depth;
     }
 
     public String getTitle() {
@@ -91,35 +121,15 @@ public class earthquake {
 
 
     public String titleForMap(){
-        String temp;
-        String ss[] = title.split(":", 2);
-        String M[] = ss[1].split(":" ,2);
-
-        String N[] = M[1].split(",",3);
-        String name = N[0].concat(" " + N[1]);
-        return name;
+        return title;
     }
 
     //Error here if theres no second part of the name it displays "NAME Fri"
 
-    public String splitTitle(){
-        {
-            String temp;
-            String ss[] = title.split(":", 2);
-            String M[] = ss[1].split(":" ,2);
-            String N[] = M[1].split(",",3);
-            String name = N[0].concat(" " + N[1]);
-            temp = "Location: " +  name + '\n' +
-                    "Date: " + N[2] + '\n' +
-                    "Mag: " + M[0] + '\n';
-            return temp;
-        }
-    }
-
     @Override
     public String toString() {
 
-       String temp =  title;
+       String temp =  title + " " + mag + " " + depth;
         return temp;
     }
 }

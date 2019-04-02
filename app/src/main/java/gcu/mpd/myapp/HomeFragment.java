@@ -65,9 +65,27 @@ public class HomeFragment extends Fragment {
             eal = xmlParse.getEarthquakeList();
             for(earthquake e : eal)
             {
+                //Set Title
                 String S[] = e.getDescription().split(";", 3);
                 String Title[] = S[1].split(":", 2);
                 e.setTitle(Title[1].trim());
+
+               // Log.e("Title", Title[1].trim());
+
+                //Set Mag
+                String S2[] = e.getDescription().split(";");
+                String D[] = S2[4].split(":", 2);
+                e.setMag(D[1]);
+
+               // Log.e("Mag", D[1]);
+
+                //Set Depth
+                String temp2[] = e.getDescription().split(";");
+                String D2[] = temp2[3].split(" ");
+                e.setDepth(D2[2]);
+               // Log.e("Depth", D2[2]);
+
+
             }
 
             //Create new thread for both these operations so they dont block the main thread.
@@ -96,7 +114,9 @@ public class HomeFragment extends Fragment {
             String  category = o.getCategory();
             Double  gLat = Double.valueOf(o.getgLat());
            Double  gLong = Double.valueOf(o.getgLong());
-          dbh.insert(title, description, link, pubDate, category, gLat, gLong);
+           String  mag = o.getMag();
+           String depth = o.getDepth();
+          dbh.insert(title, description, link, pubDate, category, gLat, gLong, mag, depth);
          }
          }
 

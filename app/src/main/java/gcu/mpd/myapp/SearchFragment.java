@@ -141,28 +141,25 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                 for (earthquake e : ae) {
                     if (e.getPubDate().equals(t)) {
-                        //M
+
+
                         Dearthquakes.add(e);
-                        String D[] = e.getDescription().split(";");
-                        String M[] = D[4].split(":", 2);
-                        Double m2 = Double.valueOf(M[1]);
-                        // Log.e("POSTconvert", String.valueOf(m2));
-                        if (m2 > hm) {
-                            hm = m2;
+
+
+                        //M
+                        Double Mag = Double.valueOf(e.getMag());
+                        if (Mag > hm) {
+                            hm = Mag;
                             pos = counter;
                         }
+
                         //D
-                        //Make this a value in the earthquake object as well as mag
-                        String temp2[] = e.getDescription().split(";");
-                        String D2[] = temp2[3].split(" ");
-                        Log.e("split", D2[2]);
-                        if (Integer.valueOf(D2[2]) > hd) {
-                            hd = Integer.valueOf(D2[2]);
+                        if (Integer.valueOf(e.getDepth()) > hd) {
+                            hd = Integer.valueOf(e.getDepth());
                             pos2 = counter;
                         }
 
                         //Lat
-
                         if (Double.valueOf(e.getgLat()) > cHLa) {
                             cHLa = Double.valueOf(e.getgLat());
                             pos3 = counter;
@@ -173,8 +170,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                         }
 
 
-                        Log.e("longval", e.getgLong());
-                        Log.e("valtobeat", cLLo.toString());
                         //Long
                         if (Double.valueOf(e.getgLong()) > cHLo) {
                             Log.e("entered", "1");
@@ -186,6 +181,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                             cLLo = Double.valueOf(e.getgLong());
                             pos6 = counter;
                         }
+
                         counter++;
                     }
 
@@ -299,24 +295,20 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 Log.e("1", "Im here");
                 //M
                 Dearthquakes.add(e);
-                String D[] = e.getDescription().split(";");
-                String M[] = D[4].split(":", 2);
-                //  Log.e("4", M[1]);
-                Double m2 = Double.valueOf(M[1]);
-                // Log.e("POSTconvert", String.valueOf(m2));
-                if(m2 > hm){
-                    hm = m2;
+
+                //M
+                Double Mag = Double.valueOf(e.getMag());
+                if (Mag > hm) {
+                    hm = Mag;
                     pos = counter;
                 }
+
                 //D
-                //Make this a value in the earthquake object as well as mag
-                String temp2[] = e.getDescription().split(";");
-                String D2[] = temp2[3].split(" ");
-                Log.e("split", D2[2]);
-                if(Integer.valueOf(D2[2]) > hd){
-                    hd = Integer.valueOf(D2[2]);
+                if (Integer.valueOf(e.getDepth()) > hd) {
+                    hd = Integer.valueOf(e.getDepth());
                     pos2 = counter;
                 }
+
                 //Lat
                 if(Double.valueOf(e.getgLat()) > cHLa){
                     cHLa = Double.valueOf(e.getgLat());
@@ -327,8 +319,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     pos4 = counter;
                 }
 
-
-
                 //Long
                 if(Double.valueOf(e.getgLong()) > cHLo) {
                     cHLo = Double.valueOf(e.getgLong());
@@ -338,6 +328,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     cLLo = Double.valueOf(e.getgLong());
                     pos6 = counter;
                 }
+
                 counter++;
             }
         }

@@ -39,10 +39,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
    // Database creation sql statement;
-   private static final String DATABASE_CREATE = "CREATE TABLE earthquakes(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT, link TEXT, pubDate TEXT, category TEXT, lat INTEGER, long INTEGER);";
+   private static final String DATABASE_CREATE = "CREATE TABLE earthquakes(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT, link TEXT, pubDate TEXT, category TEXT, lat INTEGER, long INTEGER, mag TEXT, depth TEXT);";
 
 
-    public boolean insert (String name, String desc, String link, String pub, String cat, double lat, double glong ) {
+    public boolean insert (String name, String desc, String link, String pub, String cat, double lat, double glong, String mag, String depth) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", name);
@@ -52,6 +52,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("category", cat);
         contentValues.put("lat", lat);
         contentValues.put("long", glong);
+        contentValues.put("mag", mag);
+       contentValues.put("depth", depth);
         db.insert("earthquakes", null, contentValues);
         return true;
     }
@@ -112,6 +114,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 e.setCategory(allRows.getString(5));
                 e.setgLat(allRows.getString(6));
                 e.setgLong(allRows.getString(7));
+               e.setMag(allRows.getString(8));
+                e.setDepth(allRows.getString(9));
                 ea.add(e);
             }while(allRows.moveToNext());
         return ea;

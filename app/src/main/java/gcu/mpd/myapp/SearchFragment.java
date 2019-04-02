@@ -21,6 +21,7 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,12 +40,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     DatePickerDialog dpd;
     Integer depth = 0;
     String time;
-    Double cHLa = 0.0;
-    Double cLLa = 90.00;
-    Double cHLo = -180.00;
-    Double cLLo = -0.0;
     private ListView listApps;
     Context thiscontext;
+
+
 
     @Override
     public void onAttach(Context context) {
@@ -66,6 +65,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         mBtn.setOnClickListener(this);
         mTime.setOnClickListener(this);
         mDateTime.setOnClickListener(this);
+
+        listApps.setAdapter(null);
+
+
 
         return v;
     }
@@ -100,15 +103,15 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         }
         TimePickerDialog timeDialog= new TimePickerDialog(getActivity(), timePickerListener, hour, minute, false);
         timeDialog.show();
+        Dearthquakes.clear();
     }
 
     private TimePickerDialog.OnTimeSetListener timePickerListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-
-                Log.e("hour", String.valueOf(hourOfDay));
+            listApps.setAdapter(null);
+            Log.e("hour", String.valueOf(hourOfDay));
                 Log.e("min", String.valueOf(minute));
-
                 String h = String.valueOf(hourOfDay);
                 if (h.length() == 1) {
                     h = "0" + h;
@@ -117,17 +120,18 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 if (m.length() == 1) {
                     m = "0" + m;
                 }
-
                 String t = h + m;
                 timecalc(t);
             }
 
-
-            public void timecalc(String t){
+            public void timecalc(String t) {
                 Double hm = -1.0;
                 Integer counter = 0;
                 Integer hd = 0;
-
+                Double cHLa = 0.0;
+                Double cLLa = 90.00;
+                Double cHLo = -180.00;
+                Double cLLo = 180.0;
                 Integer pos = null;
                 Integer pos2 = null;
                 Integer pos3 = null;
@@ -135,42 +139,35 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 Integer pos5 = null;
                 Integer pos6 = null;
 
-                for(earthquake e: ae){
-
-                    //This whole section needs to add features that display more than one earthwake
-                    //if they match e.g both have the same depth
-                    //  Log.e("1", e.getPubDate());
-                    // Log.e("2", t);
-                    if(e.getPubDate().equals(time)){
+                for (earthquake e : ae) {
+                    if (e.getPubDate().equals(t)) {
                         //M
                         Dearthquakes.add(e);
                         String D[] = e.getDescription().split(";");
                         String M[] = D[4].split(":", 2);
-                        //  Log.e("4", M[1]);
                         Double m2 = Double.valueOf(M[1]);
                         // Log.e("POSTconvert", String.valueOf(m2));
-                        if(m2 > hm){
+                        if (m2 > hm) {
                             hm = m2;
                             pos = counter;
                         }
-
                         //D
                         //Make this a value in the earthquake object as well as mag
                         String temp2[] = e.getDescription().split(";");
                         String D2[] = temp2[3].split(" ");
                         Log.e("split", D2[2]);
-                        if(Integer.valueOf(D2[2]) > hd){
+                        if (Integer.valueOf(D2[2]) > hd) {
                             hd = Integer.valueOf(D2[2]);
                             pos2 = counter;
                         }
 
                         //Lat
 
-                        if(Double.valueOf(e.getgLat()) > cHLa){
+                        if (Double.valueOf(e.getgLat()) > cHLa) {
                             cHLa = Double.valueOf(e.getgLat());
                             pos3 = counter;
                         }
-                        if(Double.valueOf(e.getgLat()) < cLLa) {
+                        if (Double.valueOf(e.getgLat()) < cLLa) {
                             cLLa = Double.valueOf(e.getgLat());
                             pos4 = counter;
                         }
@@ -179,12 +176,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                         Log.e("longval", e.getgLong());
                         Log.e("valtobeat", cLLo.toString());
                         //Long
-                        if(Double.valueOf(e.getgLong()) > cHLo){
+                        if (Double.valueOf(e.getgLong()) > cHLo) {
                             Log.e("entered", "1");
                             cHLo = Double.valueOf(e.getgLong());
                             pos5 = counter;
                         }
-                        if(Double.valueOf(e.getgLong()) < cLLo) {
+                        if (Double.valueOf(e.getgLong()) < cLLo) {
                             Log.e("entered", "2");
                             cLLo = Double.valueOf(e.getgLong());
                             pos6 = counter;
@@ -193,31 +190,35 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     }
 
                 }
-                for(earthquake e: Dearthquakes){
-                    Log.e("debug", e.getDescription());
+                if (Dearthquakes.isEmpty()) {
+                    Toast toast = Toast.makeText(thiscontext, "There were no earthquakes at this time", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    for (earthquake e : Dearthquakes) {
+                        Log.e("debug", e.getDescription());
+                    }
+                    //DISPLAY THIS!!!
+                    Log.e("HIGHESTMAG", Dearthquakes.get(pos).getDescription());
+                    Log.e("HIGHESTDEPTh", Dearthquakes.get(pos2).getDescription());
+                    Log.e("NORTH", Dearthquakes.get(pos3).getDescription());
+                    Log.e("SOUTH", Dearthquakes.get(pos4).getDescription());
+                    Log.e("WEST", Dearthquakes.get(pos5).getDescription());
+                    Log.e("EAST", Dearthquakes.get(pos6).getDescription());
+
+                    earthquakesfinal.add(Dearthquakes.get(pos));
+                    earthquakesfinal.add(Dearthquakes.get(pos2));
+                    earthquakesfinal.add(Dearthquakes.get(pos3));
+                    earthquakesfinal.add(Dearthquakes.get(pos4));
+                    earthquakesfinal.add(Dearthquakes.get(pos5));
+                    earthquakesfinal.add(Dearthquakes.get(pos6));
+
+                    ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
+                            thiscontext, R.layout.list_item, earthquakesfinal);
+                    listApps.setAdapter(arrayAdapter);
+
+
                 }
-                //DISPLAY THIS!!!
-                Log.e("HIGHESTMAG", Dearthquakes.get(pos).getDescription());
-                Log.e("HIGHESTDEPTh", Dearthquakes.get(pos2).getDescription());
-                Log.e("NORTH", Dearthquakes.get(pos3).getDescription());
-                Log.e("SOUTH", Dearthquakes.get(pos4).getDescription());
-                Log.e("WEST", Dearthquakes.get(pos5).getDescription());
-                Log.e("EAST", Dearthquakes.get(pos6).getDescription());
-
-                earthquakesfinal.add(Dearthquakes.get(pos));
-                earthquakesfinal.add(Dearthquakes.get(pos2));
-                earthquakesfinal.add(Dearthquakes.get(pos3));
-                earthquakesfinal.add(Dearthquakes.get(pos4));
-                earthquakesfinal.add(Dearthquakes.get(pos5));
-                earthquakesfinal.add(Dearthquakes.get(pos6));
-
-
-                ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
-                        thiscontext, R.layout.list_item, earthquakesfinal);
-                listApps.setAdapter(arrayAdapter);
-
             }
-
 
 
         };
@@ -256,11 +257,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         }
         DatePickerDialog dateDialog= new DatePickerDialog(getActivity(), datePickerListener, mYear, mMonth, mDay);
         dateDialog.show();
+        Dearthquakes.clear();
     }
 
     private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            listApps.setAdapter(null);
             String dateYouChoosed = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
             String m = String.valueOf(monthOfYear + 1);
             if (m.length() == 1) {
@@ -286,6 +289,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         Integer pos4 = null;
         Integer pos5 = null;
         Integer pos6 = null;
+        Double cHLa = 0.0;
+        Double cLLa = 90.00;
+        Double cHLo = -180.00;
+        Double cLLo = 180.00;
 
         for(earthquake e: ae){
             if(e.getPubDate().equals(t)){
@@ -334,31 +341,35 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 counter++;
             }
         }
-        for(earthquake e: Dearthquakes){
-            Log.e("debug", e.getDescription());
+        if (Dearthquakes.isEmpty()) {
+            Toast toast = Toast.makeText(thiscontext, "There were no earthquakes on this date", Toast.LENGTH_SHORT);
+            toast.show();
+        } else {
+            for (earthquake e : Dearthquakes) {
+                Log.e("debug", e.getDescription());
+            }
+            //DISPLAY THIS!!!
+            Log.e("HIGHESTMAG", Dearthquakes.get(pos).getDescription());
+            Log.e("HIGHESTDEPTh", Dearthquakes.get(pos2).getDescription());
+            Log.e("NORTH", Dearthquakes.get(pos3).getDescription());
+            Log.e("SOUTH", Dearthquakes.get(pos4).getDescription());
+            Log.e("WEST", Dearthquakes.get(pos5).getDescription());
+            Log.e("EAST", Dearthquakes.get(pos6).getDescription());
+
+
+            earthquakesfinal.add(Dearthquakes.get(pos));
+            earthquakesfinal.add(Dearthquakes.get(pos2));
+            earthquakesfinal.add(Dearthquakes.get(pos3));
+            earthquakesfinal.add(Dearthquakes.get(pos4));
+            earthquakesfinal.add(Dearthquakes.get(pos5));
+            earthquakesfinal.add(Dearthquakes.get(pos6));
+
+            ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
+                    thiscontext, R.layout.list_item, earthquakesfinal);
+            listApps.setAdapter(arrayAdapter);
+
+
         }
-        //DISPLAY THIS!!!
-        Log.e("HIGHESTMAG", Dearthquakes.get(pos).getDescription());
-        Log.e("HIGHESTDEPTh", Dearthquakes.get(pos2).getDescription());
-        Log.e("NORTH", Dearthquakes.get(pos3).getDescription());
-        Log.e("SOUTH", Dearthquakes.get(pos4).getDescription());
-        Log.e("WEST", Dearthquakes.get(pos5).getDescription());
-        Log.e("EAST", Dearthquakes.get(pos6).getDescription());
-
-
-        earthquakesfinal.add(Dearthquakes.get(pos));
-        earthquakesfinal.add(Dearthquakes.get(pos2));
-        earthquakesfinal.add(Dearthquakes.get(pos3));
-        earthquakesfinal.add(Dearthquakes.get(pos4));
-        earthquakesfinal.add(Dearthquakes.get(pos5));
-        earthquakesfinal.add(Dearthquakes.get(pos6));
-
-
-        ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
-                thiscontext, R.layout.list_item, earthquakesfinal);
-        listApps.setAdapter(arrayAdapter);
-
-
     }
 
 

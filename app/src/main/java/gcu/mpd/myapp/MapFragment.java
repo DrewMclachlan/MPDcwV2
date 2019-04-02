@@ -39,7 +39,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         DatabaseHelper dbh = new DatabaseHelper(getContext());
        dbh.getWritableDatabase();
        e = dbh.returnall();
-       
+
 
         View v = inflater.inflate(R.layout.fragment_map,null);
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -55,7 +55,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
 
     }
-
     public void populateMap(ArrayList<earthquake> el) {
         for (earthquake e : el) {
             LatLng pos = new LatLng(Double.valueOf(e.getgLat()), Double.valueOf(e.getgLong()));
@@ -63,19 +62,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         }
     }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
-       mMap = googleMap;
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
+        mMap = googleMap;
         LatLng glasgow = new LatLng(55.86, -4.25);
-          mMap.addMarker(new MarkerOptions().position(glasgow).title("Marker in Glasgow"));
+        mMap.addMarker(new MarkerOptions().position(glasgow).title("Marker in Glasgow"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(glasgow));
         populateMap(e);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
 

@@ -58,17 +58,17 @@ public class MainActivity extends AppCompatActivity
 
         switch (menuItem.getItemId()) {
             case R.id.navigation_home:
-                mTextMessage.setText(R.string.title_home);
+
                 fragment = new HomeFragment();
                 break;
 
             case R.id.navigation_dashboard:
-                mTextMessage.setText(R.string.title_dashboard);
+
                 fragment = new MapFragment();
                 break;
             case R.id.navigation_notifications:
 
-                mTextMessage.setText(R.string.title_notifications);
+
                 fragment = new SearchFragment();
                 break;
         }

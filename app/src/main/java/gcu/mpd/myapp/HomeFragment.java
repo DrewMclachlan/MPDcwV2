@@ -61,7 +61,14 @@ public class HomeFragment extends Fragment {
             //this is called after do in background is completed
             XMLParse xmlParse = new XMLParse();
             xmlParse.parse(s);
-
+            ArrayList<earthquake> eal;
+            eal = xmlParse.getEarthquakeList();
+            for(earthquake e : eal)
+            {
+                String S[] = e.getDescription().split(";", 3);
+                String Title[] = S[1].split(":", 2);
+                e.setTitle(Title[1].trim());
+            }
 
             //Create new thread for both these operations so they dont block the main thread.
 
@@ -70,7 +77,7 @@ public class HomeFragment extends Fragment {
             addToDb(xmlParse.getEarthquakeList());
 
             ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
-                    thiscontext, R.layout.list_item, xmlParse.getEarthquakeList());
+                    thiscontext, R.layout.list_item, eal);
             listApps.setAdapter(arrayAdapter);
 
            //  s = the xml after the do in background methoded has downloaded

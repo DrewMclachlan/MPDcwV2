@@ -118,14 +118,8 @@ public class earthquake {
 
     @Override
     public String toString() {
-        String temp;
-        String ss[] = title.split(":", 2);
-        String M[] = ss[1].split(":" ,2);
-        String N[] = M[1].split(",",3);
-        String name = N[0].concat(" " + N[1]);
-        temp = "Location: " +  name + '\n' +
-                "Date: " + N[2] + '\n' +
-                "Mag: " + M[0] + '\n';
+
+       String temp =  title;
         return temp;
     }
 }

@@ -1,6 +1,7 @@
 package gcu.mpd.myapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -25,6 +27,7 @@ public class HomeFragment extends Fragment {
     private ListView listApps;
     Context thiscontext;
     ArrayList<earthquake> eal;
+    String s = null;
 
     @Override
     public void onAttach(Context context) {
@@ -40,12 +43,36 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.e("1", "Called");
         thiscontext = container.getContext();
-           View view = inflater.inflate(R.layout.fragment_home,null);
+        //if(getArguments().getString("key2") != null){
+        //    s = getArguments().getString("key2");
+        //}
+        View view = inflater.inflate(R.layout.fragment_home,null);
         listApps = (ListView) view.findViewById(R.id.xmlistview);
-        ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
-                thiscontext, R.layout.list_item, eal);
-        listApps.setAdapter(arrayAdapter);
 
+
+
+       // ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
+            //    thiscontext, R.layout.list_item, eal);
+       // listApps.setAdapter(arrayAdapter);
+
+        ListAdapter eAdapter = new ListAdapter(thiscontext, R.layout.list_item, eal);
+        listApps.setAdapter(eAdapter);
+
+        listApps.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MoreInfoAdapter mia = new MoreInfoAdapter();
+                Bundle bundle = new Bundle();
+                bundle.putInt("key", position);
+                mia.setArguments(bundle);
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, mia)
+                        .commit();
+            }
+
+
+        });
 
 
         return view;

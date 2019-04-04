@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -31,7 +32,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private TextView mTv;
     private Button mBtn;
     private Button mTime;
-    private Button mDateTime;
+    private Button nameb;
+    private EditText name;
     private DatePickerDialog.OnDateSetListener mDateSetListner;
     private ArrayList<earthquake> ae;
     ArrayList<earthquake> Dearthquakes = new ArrayList<>();
@@ -60,12 +62,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         View v = inflater.inflate(R.layout.fragment_search,null);
         mBtn = (Button) v.findViewById(R.id.btnPick);
         mTime = (Button) v.findViewById(R.id.time);
-        mDateTime = (Button) v.findViewById(R.id.datetime);
+        nameb = (Button) v.findViewById(R.id.nameb);
+        name = (EditText) v.findViewById(R.id.name);
         listApps = (ListView) v.findViewById(R.id.xmlistview2);
         mBtn.setOnClickListener(this);
         mTime.setOnClickListener(this);
-        mDateTime.setOnClickListener(this);
-
+        nameb.setOnClickListener(this);
         listApps.setAdapter(null);
 
 
@@ -82,15 +84,17 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             case R.id.time:
                 showTimePickerDialog(v);
                 break;
-            case R.id.datetime:
-                showDialog(v);
-                break;
+           case R.id.nameb:
+                searchByName();
+               break;
         }
     }
     public void showTimePickerDialog(View v) {
+        Dearthquakes.clear();
+        earthquakesfinal.clear();
         final Calendar c = Calendar.getInstance();
         int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);;
+        int minute = c.get(Calendar.MINUTE);
         DatabaseHelper dbh = new DatabaseHelper(getContext());
         ae = dbh.returnall();
         for (earthquake e : ae) {
@@ -103,7 +107,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         }
         TimePickerDialog timeDialog= new TimePickerDialog(getActivity(), timePickerListener, hour, minute, false);
         timeDialog.show();
-        Dearthquakes.clear();
+
     }
 
     private TimePickerDialog.OnTimeSetListener timePickerListener = new TimePickerDialog.OnTimeSetListener() {
@@ -193,43 +197,14 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     for (earthquake e : Dearthquakes) {
                         Log.e("debug", e.getDescription());
                     }
-                    //DISPLAY THIS!!!
-                    Log.e("HIGHESTMAG", Dearthquakes.get(pos).getDescription());
-                    Log.e("HIGHESTDEPTh", Dearthquakes.get(pos2).getDescription());
-                    Log.e("NORTH", Dearthquakes.get(pos3).getDescription());
-                    Log.e("SOUTH", Dearthquakes.get(pos4).getDescription());
-                    Log.e("WEST", Dearthquakes.get(pos5).getDescription());
-                    Log.e("EAST", Dearthquakes.get(pos6).getDescription());
-
-                    earthquakesfinal.add(Dearthquakes.get(pos));
-                    earthquakesfinal.add(Dearthquakes.get(pos2));
-                    earthquakesfinal.add(Dearthquakes.get(pos3));
-                    earthquakesfinal.add(Dearthquakes.get(pos4));
-                    earthquakesfinal.add(Dearthquakes.get(pos5));
-                    earthquakesfinal.add(Dearthquakes.get(pos6));
-
-                    ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
-                            thiscontext, R.layout.list_item, earthquakesfinal);
-                    listApps.setAdapter(arrayAdapter);
-
-
+                   displayResults(pos, pos2, pos3, pos4, pos5, pos6);
                 }
             }
-
-
         };
 
-
-
-
-
-
-
-
-
-
-
     public void showDatePickerDialog(View v) {
+        Dearthquakes.clear();
+        earthquakesfinal.clear();
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH);
@@ -248,12 +223,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 temp = M[1] + s + M[3];
                 e.setPubDate(temp);
             } catch (java.text.ParseException e2) {
-
+                Log.e("Error", "Date Error");
             }
         }
         DatePickerDialog dateDialog= new DatePickerDialog(getActivity(), datePickerListener, mYear, mMonth, mDay);
         dateDialog.show();
-        Dearthquakes.clear();
+
     }
 
     private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
@@ -278,7 +253,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         Double hm = -1.0;
         Integer counter = 0;
         Integer hd = 0;
-
         Integer pos = null;
         Integer pos2 = null;
         Integer pos3 = null;
@@ -292,8 +266,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         for(earthquake e: ae){
             if(e.getPubDate().equals(t)){
-                Log.e("1", "Im here");
                 //M
+
+                //Adds earthquakes that match date inputed to a new array
                 Dearthquakes.add(e);
 
                 //M
@@ -339,38 +314,119 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             for (earthquake e : Dearthquakes) {
                 Log.e("debug", e.getDescription());
             }
-            //DISPLAY THIS!!!
-            Log.e("HIGHESTMAG", Dearthquakes.get(pos).getDescription());
-            Log.e("HIGHESTDEPTh", Dearthquakes.get(pos2).getDescription());
-            Log.e("NORTH", Dearthquakes.get(pos3).getDescription());
-            Log.e("SOUTH", Dearthquakes.get(pos4).getDescription());
-            Log.e("WEST", Dearthquakes.get(pos5).getDescription());
-            Log.e("EAST", Dearthquakes.get(pos6).getDescription());
-
-
-            earthquakesfinal.add(Dearthquakes.get(pos));
-            earthquakesfinal.add(Dearthquakes.get(pos2));
-            earthquakesfinal.add(Dearthquakes.get(pos3));
-            earthquakesfinal.add(Dearthquakes.get(pos4));
-            earthquakesfinal.add(Dearthquakes.get(pos5));
-            earthquakesfinal.add(Dearthquakes.get(pos6));
-
-            ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
-                    thiscontext, R.layout.list_item, earthquakesfinal);
-            listApps.setAdapter(arrayAdapter);
-
-
+            displayResults(pos, pos2, pos3, pos4, pos5, pos6);
         }
     }
 
+    public void searchByName() {
+        Dearthquakes.clear();
+        earthquakesfinal.clear();
+        DatabaseHelper dbh = new DatabaseHelper(getContext());
+        ae = dbh.returnall();
+        Double hm = -1.0;
+        Integer counter = 0;
+        Integer hd = 0;
+        Integer pos = null;
+        Integer pos2 = null;
+        Integer pos3 = null;
+        Integer pos4 = null;
+        Integer pos5 = null;
+        Integer pos6 = null;
+        Double cHLa = 0.0;
+        Double cLLa = 90.00;
+        Double cHLo = -180.00;
+        Double cLLo = 180.00;
 
-    public void showDialog(View v) {
-        DialogFragment newFragment2 = new TimePickerFragment();
-        newFragment2.show(getFragmentManager(), "timePicker");
+
+        String inputedname = name.getText().toString().toLowerCase();
+        for (earthquake e : ae) {
+            String T = e.getTitle().toLowerCase();
+            if (T.contains(inputedname)) {
+               Dearthquakes.add(e);
+                Double Mag = Double.valueOf(e.getMag());
+                if (Mag > hm) {
+                    hm = Mag;
+                    pos = counter;
+                }
+
+                //D
+                if (Integer.valueOf(e.getDepth()) > hd) {
+                    hd = Integer.valueOf(e.getDepth());
+                    pos2 = counter;
+                }
+
+                //Lat
+                if(Double.valueOf(e.getgLat()) > cHLa){
+                    cHLa = Double.valueOf(e.getgLat());
+                    pos3 = counter;
+                }
+                if(Double.valueOf(e.getgLat()) < cLLa) {
+                    cLLa = Double.valueOf(e.getgLat());
+                    pos4 = counter;
+                }
+
+                //Long
+                if(Double.valueOf(e.getgLong()) > cHLo) {
+                    cHLo = Double.valueOf(e.getgLong());
+                    pos5 = counter;
+                }
+                if(Double.valueOf(e.getgLong()) < cLLo) {
+                    cLLo = Double.valueOf(e.getgLong());
+                    pos6 = counter;
+                }
+
+                counter++;
+            }
+            }
+
+
+        if (Dearthquakes.isEmpty()) {
+            Toast toast = Toast.makeText(thiscontext, "There were no earthquakes on this date", Toast.LENGTH_SHORT);
+            toast.show();
+        } else {
+            for (earthquake e : Dearthquakes) {
+                Log.e("debug", e.getDescription());
+            }
+            displayResults(pos, pos2, pos3, pos4, pos5, pos6);
+        }
+        }
+
+
+
+
+
+
+
+
+    public void displayResults(int p, int p1, int p2, int p3, int p4, int p5){
+        //DISPLAY THIS!!!
+        Log.e("HIGHESTMAG", Dearthquakes.get(p).getDescription());
+        Log.e("HIGHESTDEPTh", Dearthquakes.get(p1).getDescription());
+        Log.e("NORTH", Dearthquakes.get(p2).getDescription());
+        Log.e("SOUTH", Dearthquakes.get(p3).getDescription());
+        Log.e("WEST", Dearthquakes.get(p4).getDescription());
+        Log.e("EAST", Dearthquakes.get(p5).getDescription());
+        earthquakesfinal.add(new earthquake(Dearthquakes.get(p)));
+        earthquakesfinal.add(new earthquake(Dearthquakes.get(p1)));
+        earthquakesfinal.add(new earthquake(Dearthquakes.get(p2)));
+        earthquakesfinal.add(new earthquake(Dearthquakes.get(p3)));
+        earthquakesfinal.add(new earthquake(Dearthquakes.get(p4)));
+        earthquakesfinal.add(new earthquake(Dearthquakes.get(p5)));
+        earthquakesfinal.get(0).setAtr("Highest Mag");
+        earthquakesfinal.get(1).setAtr("Lowest Depth");
+        earthquakesfinal.get(2).setAtr("Most Northenly");
+        earthquakesfinal.get(3).setAtr("Most Sothernly");
+        earthquakesfinal.get(4).setAtr("Most Easterly");
+        earthquakesfinal.get(5).setAtr("Most Westerly");
+
+        for(earthquake e: earthquakesfinal){
+            Log.e("h1", e.toString());
+        }
+        ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
+                thiscontext, R.layout.list_item2, earthquakesfinal);
+        listApps.setAdapter(arrayAdapter);
+
     }
-
-
-
 
 
 

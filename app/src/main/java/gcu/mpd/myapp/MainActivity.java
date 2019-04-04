@@ -9,9 +9,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -26,12 +29,13 @@ public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private TextView mTextMessage;
-
+    private SearchView mSearchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        DatabaseHelper dbh = new DatabaseHelper(this);
+        dbh.getWritableDatabase();
         //  Log.d(TAG, "OC: starting Asynctask");
 
        // Log.d(TAG, "OC: done");
@@ -40,16 +44,37 @@ public class MainActivity extends AppCompatActivity
         DownloadData downloadData = new DownloadData();
         downloadData.execute("http://quakes.bgs.ac.uk/feeds/MhSeismology.xml");
         mTextMessage = (TextView) findViewById(R.id.message);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, new HomeFragment())
-                .commit();
-
-
-
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_search, menu);
+        MenuItem item = menu.findItem(R.id.menuSearch);
+        mSearchView = (SearchView) item.getActionView();
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                HomeFragment mia = new HomeFragment();
+                Bundle bundle = new Bundle();
+                bundle.getString("key2", s);
+                mia.setArguments(bundle);
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, mia)
+                        .commit();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     private boolean loadFragment(Fragment fragment){
@@ -70,7 +95,7 @@ public class MainActivity extends AppCompatActivity
         switch (menuItem.getItemId()) {
             case R.id.navigation_home:
 
-                fragment = new HomeFragment();
+               fragment = new HomeFragment();
                 break;
 
             case R.id.navigation_dashboard:
@@ -131,6 +156,12 @@ public class MainActivity extends AppCompatActivity
 
             addToDb(xmlParse.getEarthquakeList());
 
+             getSupportFragmentManager()
+            .beginTransaction()
+              .replace(R.id.fragment_container, new HomeFragment())
+              .commit();
+
+
 
             //  s = the xml after the do in background methoded has downloaded
         }
@@ -140,6 +171,7 @@ public class MainActivity extends AppCompatActivity
             DatabaseHelper dbh = new DatabaseHelper(getApplicationContext());
             dbh.getWritableDatabase();
             dbh.drop();
+            int id = 0;
             for(earthquake o : e){
                 String title = o.getTitle();
                 String description = o.getDescription();
@@ -150,11 +182,10 @@ public class MainActivity extends AppCompatActivity
                 Double  gLong = Double.valueOf(o.getgLong());
                 String  mag = o.getMag();
                 String depth = o.getDepth();
-                dbh.insert(title, description, link, pubDate, category, gLat, gLong, mag, depth);
+                dbh.insert(id, title, description, link, pubDate, category, gLat, gLong, mag, depth);
+                id++;
             }
         }
-
-
 
 
         @Override

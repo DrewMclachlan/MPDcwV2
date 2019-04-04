@@ -24,6 +24,7 @@ public class earthquake {
         gLong = "";
         mag = "";
         depth = "";
+        atr = "";
 
     }
     public earthquake(String atitle, String adescription, String alink, String apubDate,
@@ -36,6 +37,18 @@ public class earthquake {
         category = acategory;
         gLat = agLat;
         gLong = agLong;
+    }
+
+    public earthquake(earthquake e){
+        title = e.title;
+        description = e.description;
+        link  = e.link;
+        pubDate = e.pubDate;
+        category = e.category;
+        mag = e.mag;
+        depth = e.depth;
+        gLat = e.gLat;
+        gLong = e.gLong;
     }
 
     public String getAtr() {
@@ -129,7 +142,7 @@ public class earthquake {
     @Override
     public String toString() {
 
-       String temp =  title + " " + mag + " " + depth;
+       String temp =  atr + "\n" + "\n" + title + "\n"  + "Mag: " + mag + "  Depth: " + depth + "  Lat: " + gLat + "  Long: " + gLong;
         return temp;
     }
 }

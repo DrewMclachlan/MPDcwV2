@@ -21,7 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String deptTable="Dept";
     static final String colDeptID="DeptID";
     static final String colDeptName="DeptName";
-    private SQLiteDatabase db;
+    private SQLiteDatabase dbs;
     static final String viewEmps="ViewEmps";
 
     public DatabaseHelper(Context context)
@@ -39,12 +39,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
    // Database creation sql statement;
-   private static final String DATABASE_CREATE = "CREATE TABLE earthquakes(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, description TEXT, link TEXT, pubDate TEXT, category TEXT, lat INTEGER, long INTEGER, mag TEXT, depth TEXT);";
+   private static final String DATABASE_CREATE = "CREATE TABLE earthquakes(id INTEGER PRIMARY KEY NOT NULL, name TEXT, description TEXT, link TEXT, pubDate TEXT, category TEXT, lat INTEGER, long INTEGER, mag TEXT, depth TEXT);";
 
 
-    public boolean insert (String name, String desc, String link, String pub, String cat, double lat, double glong, String mag, String depth) {
+    public boolean insert (Integer id, String name, String desc, String link, String pub, String cat, double lat, double glong, String mag, String depth) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put("id", id);
         contentValues.put("name", name);
         contentValues.put("description", desc);
         contentValues.put("link", link);
@@ -59,12 +60,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public boolean drop(){
-        SQLiteDatabase db = this.getWritableDatabase();
-       db.execSQL("DELETE FROM earthquakes");
-        Log.e("deleted", "deleted");
-        return true;
+    public boolean drop() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String count = "SELECT count(*) FROM earthquakes";
+        Cursor mcursor = db.rawQuery(count, null);
+        mcursor.moveToFirst();
+        int icount = mcursor.getInt(0);
+        if (icount > 0) {
+            db.delete("earthquakes", null, null);
+            Log.e("Drop", "Deleted");
+            return true;
+        } else {
+            Log.e("Drop", "notable");
+            return true;
+        }
     }
+
+
 
 
 
@@ -125,7 +137,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-
     public earthquake getObjById(int id){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor allRows  = db.rawQuery("SELECT * FROM  earthquakes WHERE id =" + id , null);
@@ -141,10 +152,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.e("1","done");
             Log.e("2", e.toString());
             return e;
-
         }
+        Log.e("3","3");
         return null;
     }
+
 
 
     public ArrayList<String> selectname() {

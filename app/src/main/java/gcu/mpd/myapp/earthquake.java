@@ -13,6 +13,16 @@ public class earthquake {
     private String depth;
     private String atr;
 
+    public String getSearchdt() {
+        return searchdt;
+    }
+
+    public void setSearchdt(String searchdt) {
+        this.searchdt = searchdt;
+    }
+
+    private String searchdt;
+
     public earthquake()
     {
         title = "";
@@ -25,6 +35,7 @@ public class earthquake {
         mag = "";
         depth = "";
         atr = "";
+        searchdt = "";
 
     }
     public earthquake(String atitle, String adescription, String alink, String apubDate,

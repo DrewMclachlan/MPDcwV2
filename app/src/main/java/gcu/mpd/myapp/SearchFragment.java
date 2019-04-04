@@ -34,6 +34,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private Button mTime;
     private Button nameb;
     private EditText name;
+    private Button vmap3;
     private DatePickerDialog.OnDateSetListener mDateSetListner;
     private ArrayList<earthquake> ae;
     ArrayList<earthquake> searched4equakes = new ArrayList<>();
@@ -44,6 +45,22 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     String time;
     private ListView listApps;
     Context thiscontext;
+    Double hm = -1.0;
+    Integer hd = 0;
+    Integer pos = null;
+    Integer pos2 = null;
+    Integer pos3 = null;
+    Integer pos4 = null;
+    Integer pos5 = null;
+    Integer pos6 = null;
+    Double cHLa = 0.0;
+    Double cLLa = 90.00;
+    Double cHLo = -180.00;
+    Double cLLo = 180.00;
+
+
+
+
 
     @Override
     public void onAttach(Context context) {
@@ -60,11 +77,14 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         mTime = (Button) v.findViewById(R.id.time);
         nameb = (Button) v.findViewById(R.id.nameb);
         name = (EditText) v.findViewById(R.id.name);
+        vmap3 = (Button) v.findViewById(R.id.vmap3);
         listApps = (ListView) v.findViewById(R.id.xmlistview2);
         mBtn.setOnClickListener(this);
         mTime.setOnClickListener(this);
         nameb.setOnClickListener(this);
+        vmap3.setOnClickListener(this);
         listApps.setAdapter(null);
+
 
         //Pull database out
         DatabaseHelper dbh = new DatabaseHelper(getContext());
@@ -72,14 +92,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         String date = "";
         String time = "";
 
+
             //Normalise Time
             for (earthquake earthquake : ae) {
                 String temp = earthquake.getPubDate();
                 String M[] = temp.split(" ", 5);
                 String T[] = M[4].split(":", 3);
                 time = T[0] + T[1];
-
-
                 //Normalise Date
                 String M2[] = temp.split(" ", 5);
                 try {
@@ -114,8 +133,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
            case R.id.nameb:
                 searchByName();
                break;
+            case R.id.vmap3:
+                sendDataToMap();
         }
     }
+
     public void showTimePickerDialog(View v) {
         final Calendar c = Calendar.getInstance();
         int hour = c.get(Calendar.HOUR_OF_DAY);
@@ -144,56 +166,15 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 timecalc(t);
             }
 
+
             public void timecalc(String t) {
                 Double hm = -1.0;
                 Integer counter = 0;
-                Integer hd = 0;
-                Double cHLa = 0.0;
-                Double cLLa = 90.00;
-                Double cHLo = -180.00;
-                Double cLLo = 180.0;
-                Integer pos = null;
-                Integer pos2 = null;
-                Integer pos3 = null;
-                Integer pos4 = null;
-                Integer pos5 = null;
-                Integer pos6 = null;
-
                 for (earthquake e : ae) {
                     String T[] = e.getSearchdt().split("/", 2);
                     if (T[1].equals(t)) {
                         searched4equakes.add(e);
-                        //M
-                        Double Mag = Double.valueOf(e.getMag());
-                        if (Mag > hm) {
-                            hm = Mag;
-                            pos = counter;
-                        }
-                        //D
-                        if (Integer.valueOf(e.getDepth()) > hd) {
-                            hd = Integer.valueOf(e.getDepth());
-                            pos2 = counter;
-                        }
-                        //Lat
-                        if (Double.valueOf(e.getgLat()) > cHLa) {
-                            cHLa = Double.valueOf(e.getgLat());
-                            pos3 = counter;
-                        }
-                        if (Double.valueOf(e.getgLat()) < cLLa) {
-                            cLLa = Double.valueOf(e.getgLat());
-                            pos4 = counter;
-                        }
-                        //Long
-                        if (Double.valueOf(e.getgLong()) > cHLo) {
-                            Log.e("entered", "1");
-                            cHLo = Double.valueOf(e.getgLong());
-                            pos5 = counter;
-                        }
-                        if (Double.valueOf(e.getgLong()) < cLLo) {
-                            Log.e("entered", "2");
-                            cLLo = Double.valueOf(e.getgLong());
-                            pos6 = counter;
-                        }
+                        calculation(e, counter);
                         counter++;
                     }
                 }
@@ -243,59 +224,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     public void datecalc(String t){
         Double hm = -1.0;
         Integer counter = 0;
-        Integer hd = 0;
-        Integer pos = null;
-        Integer pos2 = null;
-        Integer pos3 = null;
-        Integer pos4 = null;
-        Integer pos5 = null;
-        Integer pos6 = null;
-        Double cHLa = 0.0;
-        Double cLLa = 90.00;
-        Double cHLo = -180.00;
-        Double cLLo = 180.00;
-
         for(earthquake e: ae){
             String T[] = e.getSearchdt().split("/", 2);
             if(T[0].equals(t)){
-                //M
-
                 //Adds earthquakes that match date inputed to a new array
                 searched4equakes.add(e);
-
-                //M
-                Double Mag = Double.valueOf(e.getMag());
-                if (Mag > hm) {
-                    hm = Mag;
-                    pos = counter;
-                }
-
-                //D
-                if (Integer.valueOf(e.getDepth()) > hd) {
-                    hd = Integer.valueOf(e.getDepth());
-                    pos2 = counter;
-                }
-
-                //Lat
-                if(Double.valueOf(e.getgLat()) > cHLa){
-                    cHLa = Double.valueOf(e.getgLat());
-                    pos3 = counter;
-                }
-                if(Double.valueOf(e.getgLat()) < cLLa) {
-                    cLLa = Double.valueOf(e.getgLat());
-                    pos4 = counter;
-                }
-
-                //Long
-                if(Double.valueOf(e.getgLong()) > cHLo) {
-                    cHLo = Double.valueOf(e.getgLong());
-                    pos5 = counter;
-                }
-                if(Double.valueOf(e.getgLong()) < cLLo) {
-                    cLLo = Double.valueOf(e.getgLong());
-                    pos6 = counter;
-                }
-
+                calculation(e, counter);
                 counter++;
             }
         }
@@ -314,59 +248,17 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         searched4equakes.clear();
         earthquakesfinal.clear();
         listApps.setAdapter(null);
-        Double hm = -1.0;
         Integer counter = 0;
-        Integer hd = 0;
-        Integer pos = null;
-        Integer pos2 = null;
-        Integer pos3 = null;
-        Integer pos4 = null;
-        Integer pos5 = null;
-        Integer pos6 = null;
-        Double cHLa = 0.0;
-        Double cLLa = 90.00;
-        Double cHLo = -180.00;
-        Double cLLo = 180.00;
 
         String inputedname = name.getText().toString().toLowerCase();
         for (earthquake e : ae) {
             String T = e.getTitle().toLowerCase();
             if (T.contains(inputedname)) {
                searched4equakes.add(e);
-                Double Mag = Double.valueOf(e.getMag());
-                if (Mag > hm) {
-                    hm = Mag;
-                    pos = counter;
-                }
-
-                //D
-                if (Integer.valueOf(e.getDepth()) > hd) {
-                    hd = Integer.valueOf(e.getDepth());
-                    pos2 = counter;
-                }
-
-                //Lat
-                if(Double.valueOf(e.getgLat()) > cHLa){
-                    cHLa = Double.valueOf(e.getgLat());
-                    pos3 = counter;
-                }
-                if(Double.valueOf(e.getgLat()) < cLLa) {
-                    cLLa = Double.valueOf(e.getgLat());
-                    pos4 = counter;
-                }
-
-                //Long
-                if(Double.valueOf(e.getgLong()) > cHLo) {
-                    cHLo = Double.valueOf(e.getgLong());
-                    pos5 = counter;
-                }
-                if(Double.valueOf(e.getgLong()) < cLLo) {
-                    cLLo = Double.valueOf(e.getgLong());
-                    pos6 = counter;
-                }
-
-                counter++;
+               calculation(e, counter);
+               counter++;
             }
+
             }
         if (searched4equakes.isEmpty()) {
             Toast toast = Toast.makeText(thiscontext, "There were no earthquakes with this name", Toast.LENGTH_SHORT);
@@ -377,6 +269,40 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             }
             displayResults(pos, pos2, pos3, pos4, pos5, pos6);
         }
+        }
+
+        public void calculation(earthquake e, int counter){
+            //Mag
+            Double Mag = Double.valueOf(e.getMag());
+            if (Mag > hm) {
+                hm = Mag;
+                pos = counter;
+            }
+            //Depth
+            if (Integer.valueOf(e.getDepth()) > hd) {
+                hd = Integer.valueOf(e.getDepth());
+                pos2 = counter;
+            }
+
+            //Lat
+            if(Double.valueOf(e.getgLat()) > cHLa){
+                cHLa = Double.valueOf(e.getgLat());
+                pos3 = counter;
+            }
+            if(Double.valueOf(e.getgLat()) < cLLa) {
+                cLLa = Double.valueOf(e.getgLat());
+                pos4 = counter;
+            }
+
+            //Long
+            if(Double.valueOf(e.getgLong()) > cHLo) {
+                cHLo = Double.valueOf(e.getgLong());
+                pos5 = counter;
+            }
+            if(Double.valueOf(e.getgLong()) < cLLo) {
+                cLLo = Double.valueOf(e.getgLong());
+                pos6 = counter;
+            }
         }
 
 
@@ -408,12 +334,26 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         for(earthquake e: earthquakesfinal){
             Log.e("h1", e.toString());
         }
-        ArrayAdapter<earthquake> arrayAdapter = new ArrayAdapter<>(
-                thiscontext, R.layout.list_item2, earthquakesfinal);
-        listApps.setAdapter(arrayAdapter);
+        SearchResultsAdapter sra = new SearchResultsAdapter(thiscontext, R.layout.search_results, earthquakesfinal);
+
+        listApps.setAdapter(sra);
 
     }
 
 
-
+    public void sendDataToMap(){
+        if(searched4equakes.isEmpty()){
+            Toast toast = Toast.makeText(thiscontext, "No search data to display on map", Toast.LENGTH_SHORT);
+            toast.show();
+        }else{
+            MapFragment3 map2 = new MapFragment3();
+            Bundle bundle = new Bundle();
+             bundle.putParcelableArrayList("aL", searched4equakes);
+            map2.setArguments(bundle);
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, map2 )
+                    .commit();
+        }
+    }
 }

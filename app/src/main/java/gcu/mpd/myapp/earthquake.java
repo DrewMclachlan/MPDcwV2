@@ -1,6 +1,9 @@
 package gcu.mpd.myapp;
 
-public class earthquake {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class earthquake  implements Parcelable {
     private String title;
     private String description;
     private String link;
@@ -153,7 +156,54 @@ public class earthquake {
     @Override
     public String toString() {
 
-       String temp =  atr + "\n" + "\n" + title + "\n"  + "Mag: " + mag + "  Depth: " + depth + "  Lat: " + gLat + "  Long: " + gLong;
+       String temp =  atr + "\n" + "\n" + title + "\n" + pubDate + "\n"  + "Mag: " + mag + "  Depth: " + depth + "  Lat: " + gLat + "  Long: " + gLong;
         return temp;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(this.link);
+        dest.writeString(this.pubDate);
+        dest.writeString(this.category);
+        dest.writeString(this.gLat);
+        dest.writeString(this.gLong);
+        dest.writeString(this.mag);
+        dest.writeString(this.depth);
+        dest.writeString(this.atr);
+        dest.writeString(this.searchdt);
+    }
+
+    protected earthquake(Parcel in) {
+        this.title = in.readString();
+        this.description = in.readString();
+        this.link = in.readString();
+        this.pubDate = in.readString();
+        this.category = in.readString();
+        this.gLat = in.readString();
+        this.gLong = in.readString();
+        this.mag = in.readString();
+        this.depth = in.readString();
+        this.atr = in.readString();
+        this.searchdt = in.readString();
+    }
+
+    public static final Creator<earthquake> CREATOR = new Creator<earthquake>() {
+        @Override
+        public earthquake createFromParcel(Parcel source) {
+            return new earthquake(source);
+        }
+
+        @Override
+        public earthquake[] newArray(int size) {
+            return new earthquake[size];
+        }
+    };
 }

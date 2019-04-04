@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -65,9 +66,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng glasgow = new LatLng(55.86, -4.25);
-        mMap.addMarker(new MarkerOptions().position(glasgow).title("Marker in Glasgow"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(glasgow));
+        int zoom = 5;
+        LatLng start = new LatLng(55.2, -3.0);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(start));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(5.0f));
         populateMap(e);
         mMap.getUiSettings().setZoomControlsEnabled(true);
     }

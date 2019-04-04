@@ -9,11 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class MoreInfoAdapter extends Fragment {
+public class MoreInfoAdapter extends Fragment implements View.OnClickListener{
 
     private List<earthquake> earthquakeList;
 
@@ -25,8 +26,10 @@ public class MoreInfoAdapter extends Fragment {
     private TextView cat;
     private TextView glong;
     private TextView glat;
+    private Button vMap;
     DatabaseHelper dhb;
     earthquake e;
+    Context thiscontext;
 
 
     @Override
@@ -50,6 +53,8 @@ public class MoreInfoAdapter extends Fragment {
         pub = (TextView) v.findViewById(R.id.pub);
         glong = (TextView) v.findViewById(R.id.glong);
         glat = (TextView) v.findViewById(R.id.glat);
+        vMap = (Button) v.findViewById(R.id.vmap);
+
 
         name.setText(e.getTitle());
         desc.setText(e.getDescription());
@@ -59,6 +64,25 @@ public class MoreInfoAdapter extends Fragment {
         glong.setText(e.getgLong());
         glat.setText(e.getgLat());
 
+        vMap.setOnClickListener(this);
+
         return v;
     }
+
+
+    @Override
+    public void onClick(View view) {
+        MapFragment2 map2 = new MapFragment2();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("obj", e);
+        map2.setArguments(bundle);
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, map2 )
+                .commit();
+
+
+    }
+
+
 }

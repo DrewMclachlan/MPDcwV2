@@ -4,20 +4,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,26 +18,24 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    private TextView mTextMessage;
+
     private SearchView mSearchView;
+    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         DatabaseHelper dbh = new DatabaseHelper(this);
         dbh.getWritableDatabase();
-        //  Log.d(TAG, "OC: starting Asynctask");
-
-       // Log.d(TAG, "OC: done");
-       // listApps = (ListView) findViewById(R.id.xmlistview);
-
         DownloadData downloadData = new DownloadData();
         downloadData.execute("http://quakes.bgs.ac.uk/feeds/MhSeismology.xml");
-        mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
     }
@@ -68,13 +59,11 @@ public class MainActivity extends AppCompatActivity
                         .commit();
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String s) {
                 return false;
             }
         });
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -95,33 +84,22 @@ public class MainActivity extends AppCompatActivity
 
         switch (menuItem.getItemId()) {
             case R.id.navigation_home:
-
-               fragment = new HomeFragment();
+                fragment = new HomeFragment();
                 break;
-
             case R.id.navigation_dashboard:
-
                 fragment = new MapFragment();
                 break;
             case R.id.navigation_notifications:
-
-
                 fragment = new SearchFragment();
                 break;
         }
         return loadFragment(fragment);
-
-
     }
 
     private class DownloadData extends AsyncTask<String, Void, String> {
-        private static final String TAG = "DownloadData";
-
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            // Log.d(TAG, "ONP" + s);
-            //this is called after do in background is completed
             XMLParse xmlParse = new XMLParse();
             xmlParse.parse(s);
             ArrayList<earthquake> eal;
@@ -133,38 +111,40 @@ public class MainActivity extends AppCompatActivity
                 String Title[] = S[1].split(":", 2);
                 e.setTitle(Title[1].trim());
 
-                // Log.e("Title", Title[1].trim());
-
                 //Set Mag
                 String S2[] = e.getDescription().split(";");
                 String D[] = S2[4].split(":", 2);
                 e.setMag(D[1]);
 
-                // Log.e("Mag", D[1]);
-
                 //Set Depth
                 String temp2[] = e.getDescription().split(";");
                 String D2[] = temp2[3].split(" ");
                 e.setDepth(D2[2]);
-                // Log.e("Depth", D2[2]);
-
 
             }
-
-            //Create new thread for both these operations so they dont block the main thread.
-
-            //  populateMap(xmlParse.getEarthquakeList());
-
             addToDb(xmlParse.getEarthquakeList());
+            Log.e("Download", "Download Date Complete");
+            if(count == 0) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new HomeFragment())
+                        .commit();
+            }
+            timer();
+        }
 
-             getSupportFragmentManager()
-            .beginTransaction()
-              .replace(R.id.fragment_container, new HomeFragment())
-              .commit();
-
-
-
-            //  s = the xml after the do in background methoded has downloaded
+        private void timer(){
+            count = 1;
+            Log.e("Timer", "Entered Timer");
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Log.e("Async", "Started");
+                    DownloadData downloadData = new DownloadData();
+                    downloadData.execute("http://quakes.bgs.ac.uk/feeds/MhSeismology.xml");
+                }
+            }, 2*60*1000);
         }
 
 
@@ -177,11 +157,11 @@ public class MainActivity extends AppCompatActivity
                 String title = o.getTitle();
                 String description = o.getDescription();
                 String link = o.getLink();
-                String  pubDate = o.getPubDate();
-                String  category = o.getCategory();
-                Double  gLat = Double.valueOf(o.getgLat());
-                Double  gLong = Double.valueOf(o.getgLong());
-                String  mag = o.getMag();
+                String pubDate = o.getPubDate();
+                String category = o.getCategory();
+                Double gLat = Double.valueOf(o.getgLat());
+                Double gLong = Double.valueOf(o.getgLong());
+                String mag = o.getMag();
                 String depth = o.getDepth();
                 dbh.insert(id, title, description, link, pubDate, category, gLat, gLong, mag, depth);
                 id++;
@@ -191,10 +171,9 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected String doInBackground(String... strings) {
-            // Log.d(TAG, "DIB: starts with " + strings[0]);
             String rssFeed = downloadXML(strings[0]);
             if (rssFeed == null) {
-                Log.e(TAG, "DIB: Error downloading");
+                Log.e("Database", "Download XML error");
             }
             return rssFeed;
         }
@@ -205,9 +184,6 @@ public class MainActivity extends AppCompatActivity
             try {
                 URL url = new URL(urlPath);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                int response = connection.getResponseCode();
-                Log.d(TAG, "Dxml: the response code was " + response);
-
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 int charsRead;
                 char[] inputBuffer = new char[500];
@@ -223,21 +199,14 @@ public class MainActivity extends AppCompatActivity
                 reader.close();
                 return xmlResults.toString();
             } catch (MalformedURLException e) {
-                Log.e(TAG, "Dxml: Invlaid URl" + e.getMessage());
+                Log.e("Invlaid URl", e.getMessage());
             } catch (IOException e) {
-                Log.e(TAG, "Dxml: IOe reading data" + e.getMessage());
+                Log.e("Dxml: IOe reading data", e.getMessage());
             } catch (SecurityException e) {
-                Log.e(TAG, "Dxml: Security Exception" + e.getMessage());
+                Log.e("Dxml: Security Exception", e.getMessage());
             }
             return null;
-
         }
 
     }
-
-
-
-
-
-
 }

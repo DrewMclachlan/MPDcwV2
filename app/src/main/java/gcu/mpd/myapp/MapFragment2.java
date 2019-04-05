@@ -19,8 +19,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
-
 public class MapFragment2 extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private MapView mapView;

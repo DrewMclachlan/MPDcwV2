@@ -23,17 +23,11 @@ public class XMLParse {
     }
 
 
-
     public boolean parse(String xmlData){
         boolean status = true;
         earthquake currentRecord = null;
         boolean inEntry = false;
         String textValue = "";
-
-
-
-
-
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -56,23 +50,29 @@ public class XMLParse {
 
                     case XmlPullParser.END_TAG:
                         if(inEntry){
-
                             if("item".equalsIgnoreCase(tagName)){
                                 earthquakeList.add(currentRecord);
                                 inEntry = false;
-                            } else if("title".equalsIgnoreCase(tagName)){
+                            } else if("title".equalsIgnoreCase(tagName))
+                            {
                                 currentRecord.setTitle(textValue);
-                            }else if("description".equalsIgnoreCase(tagName)){
+                            }else if("description".equalsIgnoreCase(tagName))
+                            {
                                 currentRecord.setDescription(textValue);
-                            }else if("link".equalsIgnoreCase(tagName)){
+                            }else if("link".equalsIgnoreCase(tagName))
+                            {
                                 currentRecord.setLink(textValue);
-                            }else if("pubDate".equalsIgnoreCase(tagName)){
+                            }else if("pubDate".equalsIgnoreCase(tagName))
+                            {
                                 currentRecord.setPubDate(textValue);
-                            }else if("category".equalsIgnoreCase(tagName)){
+                            }else if("category".equalsIgnoreCase(tagName))
+                            {
                                 currentRecord.setCategory(textValue);
-                            }else if("lat".equalsIgnoreCase(tagName)){
+                            }else if("lat".equalsIgnoreCase(tagName))
+                            {
                                 currentRecord.setgLat(textValue);
-                            }else if("long".equalsIgnoreCase(tagName)){
+                            }else if("long".equalsIgnoreCase(tagName))
+                            {
                                 currentRecord.setgLong(textValue);
                             }
                         }

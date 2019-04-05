@@ -7,6 +7,16 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/datetime"
+        android:layout_width="170dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="19dp"
+        android:text="SPECIFIC SEARCH"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time" />
+
+    <Button
         android:id="@+id/time"
         android:layout_width="170dp"
         android:layout_height="35dp"
@@ -30,7 +40,8 @@
         android:id="@+id/nameb"
         android:layout_width="166dp"
         android:layout_height="43dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginEnd="9dp"
         android:text="Search by name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -54,6 +65,7 @@
         android:id="@+id/name"
         android:layout_width="195dp"
         android:layout_height="40dp"
+        android:layout_marginStart="9dp"
         android:layout_marginTop="7dp"
         android:ems="10"
         android:inputType="textPersonName"
@@ -64,7 +76,7 @@
         android:id="@+id/vmap3"
         android:layout_width="37dp"
         android:layout_height="38dp"
-        android:layout_marginTop="9dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="+"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,7 +86,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="4dp"
         android:text="View on the map:"
         app:layout_constraintEnd_toStartOf="@+id/vmap3"

@@ -1,6 +1,8 @@
 package gcu.mpd.myapp;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,13 +34,23 @@ public class ListAdapter extends ArrayAdapter {
         TextView title = (TextView) v.findViewById(R.id.name);
         TextView pub = (TextView) v.findViewById(R.id.pubdate);
         TextView mag = (TextView) v.findViewById(R.id.mag);
-
         earthquake e = earthquakeList.get(position);
-         title.setText(e.getTitle());
+        title.setText(e.getTitle());
         pub.setText(e.getPubDate());
+
+
+
+        if(Double.parseDouble(e.getMag()) > 1.8){
+            ((TextView) v.findViewById(R.id.mag)).setTextColor(Color.RED);
+        }else if(Double.parseDouble(e.getMag()) > 1.0){
+            ((TextView) v.findViewById(R.id.mag)).setTextColor(Color.YELLOW);
+        }else{
+            ((TextView) v.findViewById(R.id.mag)).setTextColor(Color.GREEN);
+        }
+
+
+
         mag.setText(e.getMag());
-
         return v;
-
     }
 }

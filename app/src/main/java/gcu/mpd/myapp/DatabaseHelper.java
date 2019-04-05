@@ -33,8 +33,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DATABASE_CREATE);
-       // db.execSQL("INSERT INTO earthquakes VALUES(null, 'drew', 'hfggfello', 'www.h1.com', '170878', 'UDF' , 23, 45)");
-       // db.execSQL("INSERT INTO earthquakes VALUES(null,'drew1', 'hello1', 'www.h1.com', '170878', 'UDF' , 23, 45)");
     }
 
 
@@ -78,10 +76,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-
-
-
-
     // Method is called during an upgrade of the database,
     @Override
     public void onUpgrade(SQLiteDatabase database,int oldVersion,int newVersion){
@@ -90,26 +84,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + newVersion + ", which will destroy all old data");
         database.execSQL("DROP TABLE IF EXISTS earthquakes");
         onCreate(database);
-    }
-
-    public String getTableAsString() {
-        String tableString = String.format("Table earthquake:\n");
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor allRows  = db.rawQuery("SELECT * FROM  earthquakes", null);
-        if (allRows.moveToFirst() ){
-            String[] columnNames = allRows.getColumnNames();
-            do {
-                for (String name: columnNames) {
-                    tableString += String.format("%s: %s\n", name,
-                            allRows.getString(allRows.getColumnIndex(name)));
-                }
-                tableString += "\n";
-
-            } while (allRows.moveToNext());
-        }
-
-
-        return tableString;
     }
 
     public ArrayList<earthquake> returnall(){
@@ -135,8 +109,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-
-
     public earthquake getObjById(int id){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor allRows  = db.rawQuery("SELECT * FROM  earthquakes WHERE id =" + id , null);
@@ -155,24 +127,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         Log.e("3","3");
         return null;
-    }
-
-
-
-    public ArrayList<String> selectname() {
-        ArrayList<String> quotes = new ArrayList<>();
-        String query = "select * from  earthquakes order by name asc";
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        if (cursor.moveToFirst()) {
-            do {
-                // 0 = id, 1 = quote
-                quotes.add(cursor.getString(0));
-            } while (cursor.moveToNext());
-        }
-        db.close();
-
-        return quotes;
     }
 }

@@ -151,7 +151,6 @@ public class earthquake  implements Parcelable {
         return title;
     }
 
-    //Error here if theres no second part of the name it displays "NAME Fri"
 
     @Override
     public String toString() {

@@ -1,4 +1,11 @@
 package gcu.mpd.myapp;
+/**
+ * @Author
+ * Name: Drew Mclachlan
+ * Student ID: S1511481
+ * Programme of Study: Computing
+ */
+
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,21 +28,27 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+/**
+ * Map Fragment for populating the Map with the search results
+ */
 public class MapFragment3 extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private MapView mapView;
     SupportMapFragment mapFragment;
     private ArrayList<earthquake> e;
 
+    /**
+     * Receives the ArrayList passed to the fragment from the Search Fragment and sets up the Googlemaps
+     * @param inflater layoutInflater
+     * @param container viewGroup container
+     * @param savedInstanceState bundle
+     * @return view
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.e("3", "Called");
         Bundle extras = getArguments();
         e = extras.getParcelableArrayList("aL");
-       // for(earthquake e : e){
-        //    Log.e("par", e.toString());
-        //}
         View v = inflater.inflate(R.layout.fragment_map,null);
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if(mapFragment == null){
@@ -45,11 +58,15 @@ public class MapFragment3 extends Fragment implements OnMapReadyCallback {
             ft.replace(R.id.map, mapFragment).commit();
         }
         mapFragment.getMapAsync(this);
-        //add this to var
         return v;
 
 
     }
+
+    /**
+     * Populates the Map with each earthquake from the search result
+     * @param el
+     */
     public void populateMap(ArrayList<earthquake> el) {
         for (earthquake e : el) {
             LatLng pos = new LatLng(Double.valueOf(e.getgLat()), Double.valueOf(e.getgLong()));
@@ -57,6 +74,11 @@ public class MapFragment3 extends Fragment implements OnMapReadyCallback {
 
         }
     }
+
+    /**
+     * Sets the camera position and zoom
+     * @param googleMap map
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

@@ -1,5 +1,12 @@
 package gcu.mpd.myapp;
 
+/**
+ * @Author
+ * Name: Drew Mclachlan
+ * Student ID: S1511481
+ * Programme of Study: Computing
+*/
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,37 +16,50 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+
+
+/**
+ * Database Helper Class, that preforms operations for insertion and retrieval from the SQLlite database
+ */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "earthquakes";
-    static final String testtable = "TestTable";
-    static final String colID = "Id";
-    static final String colName="Name";
-    static final String colAge="Age";
-    static final String colDept="Dept";
 
-    static final String deptTable="Dept";
-    static final String colDeptID="DeptID";
-    static final String colDeptName="DeptName";
-    private SQLiteDatabase dbs;
-    static final String viewEmps="ViewEmps";
 
+    /**
+     * database helper constructor
+     * @param context context of the current state
+     */
     public DatabaseHelper(Context context)
     {
         super(context, DATABASE_NAME, null, 33);
     }
 
-    // Method is called during creation of the database
+    /**
+     * when object initialised creates a new earthquake table with the relevant fields
+     * @param db database object
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DATABASE_CREATE);
     }
 
+    private static final String DATABASE_CREATE = "CREATE TABLE earthquakes(id INTEGER PRIMARY KEY NOT NULL, name TEXT, description TEXT, link TEXT, pubDate TEXT, category TEXT, lat INTEGER, long INTEGER, mag TEXT, depth TEXT);";
 
-   // Database creation sql statement;
-   private static final String DATABASE_CREATE = "CREATE TABLE earthquakes(id INTEGER PRIMARY KEY NOT NULL, name TEXT, description TEXT, link TEXT, pubDate TEXT, category TEXT, lat INTEGER, long INTEGER, mag TEXT, depth TEXT);";
-
-
+    /**
+     * used to insert a new column into the database
+     * @param id id
+     * @param name title
+     * @param desc description
+     * @param link link
+     * @param pub publication date
+     * @param cat category
+     * @param lat latitude
+     * @param glong longitude
+     * @param mag magnitude
+     * @param depth depth
+     * @return true if insertion successful
+     */
     public boolean insert (Integer id, String name, String desc, String link, String pub, String cat, double lat, double glong, String mag, String depth) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -57,7 +77,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-
+    /**
+     * deletes the current table of the database.
+     * used to ensure tables do not persist of sessions
+     * @return true if deletion successful
+     */
     public boolean drop() {
         SQLiteDatabase db = this.getReadableDatabase();
         String count = "SELECT count(*) FROM earthquakes";
@@ -69,14 +93,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.e("Drop", "Deleted");
             return true;
         } else {
-            Log.e("Drop", "notable");
+            Log.e("Drop", "not applicable");
             return true;
         }
     }
 
 
-
-    // Method is called during an upgrade of the database,
+    /**
+     * generated database helper method to upgrade the sqllight version if required
+     * @param database database object
+     * @param oldVersion old version of sqlite
+     * @param newVersion new version of sqlite
+     */
     @Override
     public void onUpgrade(SQLiteDatabase database,int oldVersion,int newVersion){
         Log.w(DatabaseHelper.class.getName(),
@@ -86,6 +114,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(database);
     }
 
+    /**
+     * iterates through each column of the database adding all the attributes to an earthquake object and adding the
+     * object into an arralylist for all column in the database
+     * @return arrayList of earthquake objects
+     */
     public ArrayList<earthquake> returnall(){
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<earthquake> ea = new ArrayList<>();
@@ -109,6 +142,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    /**
+     * takes an id argument and searched the database for a certain earthquake, adds it into an earthquake object and returns it
+     * @param id id of object being located
+     * @return earthquake object if found
+     */
     public earthquake getObjById(int id){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor allRows  = db.rawQuery("SELECT * FROM  earthquakes WHERE id =" + id , null);
@@ -121,11 +159,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             e.setCategory(allRows.getString(5));
             e.setgLat(allRows.getString(6));
             e.setgLong(allRows.getString(7));
-            Log.e("1","done");
-            Log.e("2", e.toString());
+            Log.e("idobject", e.toString());
             return e;
         }
-        Log.e("3","3");
         return null;
     }
 }

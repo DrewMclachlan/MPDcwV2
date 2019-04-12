@@ -1,4 +1,11 @@
 package gcu.mpd.myapp;
+/**
+ * @Author
+ * Name: Drew Mclachlan
+ * Student ID: S1511481
+ * Programme of Study: Computing
+ */
+
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -6,27 +13,42 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+/**
+ * Class used to Parse the RSSfeed data from XML into readable data
+ */
 public class XMLParse {
-    private static final String TAG = "XMLParse";
-
-
-
     private ArrayList<earthquake> earthquakeList;
 
-    //Constructor
+    /**
+     * Constructor
+     */
     public XMLParse(){
         this.earthquakeList = new ArrayList<>();
     }
 
+    /**
+     * Returns the data from the class
+     * @return Arraylist of Earthquake Objects
+     */
     public ArrayList<earthquake> getEarthquakeList() {
         return earthquakeList;
     }
 
-
+    /**
+     * Parsing logic.
+     * Takes in the Rss feed as an argument and begins an XMLpullparser Factory. Runs a loop to continue until the end of the RSS document is reached.
+     * Begins to iterate through the document looking for specific tags. Once an 'item' tag is found, it begins a new earthquake object.
+     * then begins to check if the next tag is equal to certain tag, such as title, description and if so adds the value between the tags to the earthquake object
+     * using the set parameter for that specific attribute. This continues through each tag within the item tags. Once the item tag is closed the constructed earthquake object
+     * is added to an arraylist and the process continues for each item tag within the Rss feed until the end of the document.
+     *
+     * @param xmlData all xmldata in a string
+     * @return populated ArrayList of earthquake object
+     */
     public boolean parse(String xmlData){
         boolean status = true;
-        earthquake currentRecord = null;
-        boolean inEntry = false;
+        earthquake currentEarthquake = null;
+        boolean inItem = false;
         String textValue = "";
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -39,8 +61,8 @@ public class XMLParse {
                 switch(eventType){
                     case XmlPullParser.START_TAG:
                         if("item".equalsIgnoreCase(tagName)){
-                            inEntry = true;
-                            currentRecord = new earthquake();
+                            inItem = true;
+                            currentEarthquake = new earthquake();
                         }
                         break;
 
@@ -49,31 +71,31 @@ public class XMLParse {
                         break;
 
                     case XmlPullParser.END_TAG:
-                        if(inEntry){
+                        if(inItem){
                             if("item".equalsIgnoreCase(tagName)){
-                                earthquakeList.add(currentRecord);
-                                inEntry = false;
+                                earthquakeList.add(currentEarthquake);
+                                inItem = false;
                             } else if("title".equalsIgnoreCase(tagName))
                             {
-                                currentRecord.setTitle(textValue);
+                                currentEarthquake.setTitle(textValue);
                             }else if("description".equalsIgnoreCase(tagName))
                             {
-                                currentRecord.setDescription(textValue);
+                                currentEarthquake.setDescription(textValue);
                             }else if("link".equalsIgnoreCase(tagName))
                             {
-                                currentRecord.setLink(textValue);
+                                currentEarthquake.setLink(textValue);
                             }else if("pubDate".equalsIgnoreCase(tagName))
                             {
-                                currentRecord.setPubDate(textValue);
+                                currentEarthquake.setPubDate(textValue);
                             }else if("category".equalsIgnoreCase(tagName))
                             {
-                                currentRecord.setCategory(textValue);
+                                currentEarthquake.setCategory(textValue);
                             }else if("lat".equalsIgnoreCase(tagName))
                             {
-                                currentRecord.setgLat(textValue);
+                                currentEarthquake.setgLat(textValue);
                             }else if("long".equalsIgnoreCase(tagName))
                             {
-                                currentRecord.setgLong(textValue);
+                                currentEarthquake.setgLong(textValue);
                             }
                         }
                         break;

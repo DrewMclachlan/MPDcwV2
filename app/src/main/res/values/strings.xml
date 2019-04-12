@@ -1,5 +1,6 @@
+<!---Drew Mclachlan S1511481-->
 <resources>
-    <string name="app_name">Myapp</string>
+    <string name="app_name">Earthquake App</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
